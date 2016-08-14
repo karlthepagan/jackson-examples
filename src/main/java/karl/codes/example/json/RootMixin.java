@@ -1,5 +1,6 @@
 package karl.codes.example.json;
 
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import karl.codes.example.Document;
 import karl.codes.example.Root;
@@ -10,6 +11,7 @@ import java.util.Map;
 /**
  * Created by karl on 8/13/2016.
  */
+@JsonRootName("data")
 public abstract class RootMixin extends Root {
     @JsonUnwrapped
     public abstract Map<String, Document> getDocuments();

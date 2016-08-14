@@ -22,7 +22,8 @@ class DocumentTest extends Specification {
         when:
         Root ser = json.readValue(data, Root.class)
         Document doc = ser.documents.entrySet().first().value
-        JsonNode out = json.readTree(json.writeValueAsString(ser))
+        String outStr = json.writeValueAsString(ser)
+        JsonNode out = json.readTree(outStr)
         JsonNode outDoc = out.documents.a
 
         then:

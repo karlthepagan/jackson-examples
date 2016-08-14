@@ -2,9 +2,14 @@ package karl.codes.example
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.deser.BeanDeserializerFactory
 import karl.codes.example.json.DocumentMixin
 import karl.codes.example.json.RootMixin
+import karl.codes.example.json.RootWrapMixin
 import karl.codes.jackson.JsonDocument
+import karl.codes.jackson.JsonWrap
+import karl.codes.jackson.WrappingDeserializationContext
+import karl.codes.jackson.WrappingSerializerProvider
 import spock.lang.Specification
 
 import static org.hamcrest.Matchers.*
@@ -14,13 +19,16 @@ import static spock.util.matcher.HamcrestSupport.*
  * Created by karl on 8/13/2016.
  */
 class DocumentTest extends Specification {
-    def json = new ObjectMapper()
+    def json = new ObjectMapper(null,new WrappingSerializerProvider(),new WrappingDeserializationContext(BeanDeserializerFactory.instance))
         .addMixIn(Root.class, RootMixin.class)
         .addMixIn(Document.class, DocumentMixin.class)
+        .addMixIn(JsonWrap.Root.class, RootWrapMixin.class)
+        .addMixIn(JsonWrap.RootOutput.class, RootWrapMixin.class)
 
     def 'extra fields deserialized'() {
         when:
         Root ser = json.readValue(data, Root.class)
+        ser.links = ['link1']
         Document doc = ser.documents.entrySet().first().value
         String outStr = json.writeValueAsString(ser)
         JsonNode out = json.readTree(outStr)

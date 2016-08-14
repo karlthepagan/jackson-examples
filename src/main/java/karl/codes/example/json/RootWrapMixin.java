@@ -1,25 +1,24 @@
 package karl.codes.example.json;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import karl.codes.example.Resource;
 import karl.codes.jackson.JsonWrap;
-
-import java.util.List;
 
 /**
  * Created by karl on 8/14/2016.
  */
-@JsonPropertyOrder({"links","data"})
-public abstract class RootWrapMixin<T extends Resource> extends JsonWrap.Root<T> {
-    @JsonGetter("links")
-    public List<String> getLinks() {
-        return getBody().getLinks();
+@JsonAppend(prepend = true,
+        props = @JsonAppend.Prop(value = JsonWrap.Appender.class, name = "links", type = JsonWrap.Root.class, namespace = "data")
+)
+public class RootWrapMixin<T extends Resource> extends JsonWrap.Root<T> {
+    @JsonGetter("data")
+    public void setBody(T body) {
+        super.setBody(body);
     }
 
     @JsonGetter("data")
-    public abstract void setBody(T body);
-
-    @JsonGetter("data")
-    public abstract T getBody();
+    public T getBody() {
+        return super.getBody();
+    }
 }

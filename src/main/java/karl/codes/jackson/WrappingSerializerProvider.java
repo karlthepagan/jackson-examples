@@ -46,24 +46,24 @@ public class WrappingSerializerProvider extends DefaultSerializerProvider implem
 
     @Override
     public void serializeValue(JsonGenerator gen, Object value) throws IOException {
-        super.serializeValue(gen, RootOutput.wrap(value));
+        super.serializeValue(gen, RootOutput.wrap(value), RootOutput.wrapType(value.getClass(), getTypeFactory()));
     }
 
     @Override
     public void serializeValue(JsonGenerator gen, Object value, JavaType rootType) throws IOException {
-        super.serializeValue(gen, RootOutput.wrap(value), RootOutput.wrapType(rootType));
+        super.serializeValue(gen, RootOutput.wrap(value), RootOutput.wrapType(rootType, getTypeFactory()));
     }
 
     @Override
     public void serializeValue(JsonGenerator gen, Object value, JavaType rootType, JsonSerializer<Object> ser) throws IOException {
         // TODO wrap ser?
-        super.serializeValue(gen, RootOutput.wrap(value), RootOutput.wrapType(rootType), ser);
+        super.serializeValue(gen, RootOutput.wrap(value), RootOutput.wrapType(rootType, getTypeFactory()), ser);
     }
 
     @Override
     public void serializePolymorphic(JsonGenerator gen, Object value, JavaType rootType, JsonSerializer<Object> valueSer, TypeSerializer typeSer) throws IOException {
         // TODO wrap valueSer?
         // TODO wrap typeSer?
-        super.serializePolymorphic(gen, RootOutput.wrap(value), RootOutput.wrapType(rootType), valueSer, typeSer);
+        super.serializePolymorphic(gen, RootOutput.wrap(value), RootOutput.wrapType(rootType, getTypeFactory()), valueSer, typeSer);
     }
 }

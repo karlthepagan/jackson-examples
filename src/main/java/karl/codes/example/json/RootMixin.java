@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import karl.codes.example.Document;
 import karl.codes.example.Root;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 

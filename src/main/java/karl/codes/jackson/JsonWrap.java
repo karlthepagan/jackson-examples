@@ -104,11 +104,11 @@ public interface JsonWrap {
             JavaType beanType = declaringClass.getType().getBindings().getBoundType(0);
             // TODO get property type
             ClassIntrospector ci = config.getClassIntrospector();
-            BeanDescription bean = ci.forSerialization((SerializationConfig)config,beanType,config);
+            BeanDescription bean = ci.forSerialization((SerializationConfig)config,beanType,config); // TODO CRITICAL XXX suppress @JsonIgnore!
             propDef = findProperty(bean.findProperties(), propDef); // TODO match more precisely?
             JavaType serializedType = propDef.getField().getType(); // TODO miss in find will NPE
 
-            return new Appender(config, declaringClass, propDef, declaredType, propDef.getField().getType());
+            return new Appender(config, declaringClass, propDef, declaredType, serializedType);
         }
 
         private BeanPropertyDefinition findProperty(List<BeanPropertyDefinition> properties, BeanPropertyDefinition src) {

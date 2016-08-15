@@ -21,6 +21,6 @@ public abstract class RootMixin extends Root {
     @JsonUnwrapped
     public abstract void setDocuments(Map<String, Document> documents);
 
-    @JsonIgnore
+//    @JsonIgnore
     public abstract List<String> getLinks();
 }

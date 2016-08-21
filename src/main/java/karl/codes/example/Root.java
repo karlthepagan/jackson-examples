@@ -10,16 +10,7 @@ import java.util.Map;
  * Created by karl on 8/13/2016.
  */
 public class Root {
-    private URI baseUri; // fiction
     private Document document;
-
-    public URI getBaseUri() {
-        return baseUri;
-    }
-
-    public void setBaseUri(URI baseUri) {
-        this.baseUri = baseUri;
-    }
 
     @JsonUnwrapped
     public Document getDocument() {

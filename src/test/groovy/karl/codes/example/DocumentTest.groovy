@@ -42,7 +42,6 @@ class DocumentTest extends Specification {
         where:
         data | name | metadata  | keys | values | json | child
         '''{
-            "baseUri": "https://karl.codes",
             "name": "a",
             "metadata": "m",
             "data": {
@@ -53,7 +52,6 @@ class DocumentTest extends Specification {
         ['name',  'metadata', 'a', 'b'] |
         [null,    null,       '1', '2'] | standard | ['data']
         '''{
-            "baseUri": "https://karl.codes",
             "document": {
                 "name": "a",
                 "metadata": "m",

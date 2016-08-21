@@ -1,5 +1,8 @@
 package karl.codes.example;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
+import javax.print.Doc;
 import java.net.URI;
 import java.util.Map;
 
@@ -8,7 +11,7 @@ import java.util.Map;
  */
 public class Root {
     private URI baseUri; // fiction
-    private Map<String,Document> documents;
+    private Document document;
 
     public URI getBaseUri() {
         return baseUri;
@@ -18,11 +21,13 @@ public class Root {
         this.baseUri = baseUri;
     }
 
-    public Map<String, Document> getDocuments() {
-        return documents;
+    @JsonUnwrapped
+    public Document getDocument() {
+        return document;
     }
 
-    public void setDocuments(Map<String, Document> documents) {
-        this.documents = documents;
+    @JsonUnwrapped
+    public void setDocument(Document document) {
+        this.document = document;
     }
 }

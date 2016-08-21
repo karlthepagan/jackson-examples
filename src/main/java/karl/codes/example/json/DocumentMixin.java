@@ -1,10 +1,7 @@
 package karl.codes.example.json;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import karl.codes.example.Document;
-import karl.codes.jackson.JsonDocument;
 
 /**
  * Created by karl on 8/13/2016.

@@ -3,28 +3,34 @@ package karl.codes.jackson;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-
-import java.util.List;
 
 /**
  * Created by karl on 8/14/2016.
  */
 public interface JsonWrap {
+    public static boolean bypassWrap(Class<?> type) {
+        // bypass root wrap for JsonNode
+        return type.equals(JsonNode.class);
+    }
+
+    public static boolean bypassWrap(JavaType type) {
+        // bypass root wrap for JsonNode
+        return type.getRawClass().equals(JsonNode.class);
+    }
+
     class Root<T> {
         private T body;
 
-        @JsonGetter
-        @JsonUnwrapped
         public void setBody(T body) {
             this.body = body;
         }
 
-        @JsonGetter
-        @JsonUnwrapped
         public T getBody() {
             return body;
         }
+
     }
 
     class RootInput<T> extends Root<T> {
@@ -35,10 +41,16 @@ public interface JsonWrap {
         }
 
         public static JavaType wrapType(Class<?> type, TypeFactory tf) {
+            if(bypassWrap(type)) {
+                return tf.constructType(type);
+            }
             return tf.constructParametricType(RootInput.class, type);
         }
 
         public static JavaType wrapType(JavaType type, TypeFactory tf) {
+            if(bypassWrap(type)) {
+                return type;
+            }
             return tf.constructParametricType(RootInput.class, type);
         }
     }
@@ -51,10 +63,16 @@ public interface JsonWrap {
         }
 
         public static JavaType wrapType(Class<?> type, TypeFactory tf) {
+            if(bypassWrap(type)) {
+                return tf.constructType(type);
+            }
             return tf.constructParametricType(RootOutput.class, type);
         }
 
         public static JavaType wrapType(JavaType type, TypeFactory tf) {
+            if(bypassWrap(type)) {
+                return type;
+            }
             return tf.constructParametricType(RootOutput.class, type);
         }
     }

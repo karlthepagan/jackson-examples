@@ -16,15 +16,15 @@ import static org.hamcrest.Matchers.*
 import static spock.util.matcher.HamcrestSupport.*
 
 /**
- * Created by karl on 8/13/2016.
+ * Created by karl on 8/19/16.
  */
-class DocumentTest extends Specification {
-    def json = new ObjectMapper() //null,null,new WrappingDeserializationContext(BeanDeserializerFactory.instance))
-//        .setSerializerProvider(new WrappingSerializerProvider())
-        .addMixIn(Root.class, RootMixin.class)
-        .addMixIn(Document.class, DocumentMixin.class)
-        .addMixIn(JsonWrap.Root.class, RootWrapMixin.class)
-        .addMixIn(JsonWrap.RootOutput.class, RootWrapMixin.class)
+class RootWrapTest extends Specification {
+    def json = new ObjectMapper(null,null,new WrappingDeserializationContext(BeanDeserializerFactory.instance))
+            .setSerializerProvider(new WrappingSerializerProvider())
+            .addMixIn(Root.class, RootMixin.class)
+            .addMixIn(Document.class, DocumentMixin.class)
+            .addMixIn(JsonWrap.Root.class, RootWrapMixin.class)
+            .addMixIn(JsonWrap.RootOutput.class, RootWrapMixin.class)
 
     def 'extra fields deserialized'() {
         when:
@@ -33,7 +33,7 @@ class DocumentTest extends Specification {
         Document doc = ser.documents.entrySet().first().value
         String outStr = json.writeValueAsString(ser)
         JsonNode out = json.readTree(outStr)
-        JsonNode outDoc = out.documents.a
+        JsonNode outDoc = out.data.documents.a
 
         then:
         that doc, instanceOf(Document)
@@ -50,17 +50,18 @@ class DocumentTest extends Specification {
         where:
         data | name | metadata  | keys | values
         '''{
-            "baseUri": "https://karl.codes",
-            "documents": {
-                "a": {
-                    "name": "a",
-                    "metadata": "m",
-                    "a": "1",
-                    "b": "2"
+            "data": {
+                "baseUri": "https://karl.codes",
+                "documents": {
+                    "a": {
+                        "name": "a",
+                        "metadata": "m",
+                        "a": "1",
+                        "b": "2"
+                    }
                 }
             }
         }''' | 'a'  | 'm' |
         ['name',  'metadata', 'a', 'b'] |
         [null,    null,       '1', '2']
-    }
-}
+    }}

@@ -1,10 +1,8 @@
 package karl.codes.jackson;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.BeanDescription;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.SerializationConfig;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
@@ -21,6 +19,8 @@ import java.util.List;
  * @since 8/15/2016
  */
 public class NestedProp extends VirtualBeanPropertyWriter {
+    private static AnnotationIntrospector MASK_IGNORE = new FilteredAnnotationIntrospector(JsonIgnore.class);
+
     private AnnotatedMember _namespaceAccessor;
     private BeanPropertyDefinition _propDef;
 
@@ -54,17 +54,27 @@ public class NestedProp extends VirtualBeanPropertyWriter {
     public VirtualBeanPropertyWriter withConfig(MapperConfig<?> config, AnnotatedClass declaringClass, BeanPropertyDefinition propDef, JavaType type) {
         ClassIntrospector ci = config.getClassIntrospector();
 
+        SerializationConfig serConfig = ((SerializationConfig)config).with(MASK_IGNORE);
+
         // overloading annotation definition of "namespace" - it determines our container accessor and serialized type
-        BeanDescription parentBean = ci.forSerialization((SerializationConfig)config,declaringClass.getType(),config);
-        BeanPropertyDefinition namespaceDef = findProperty(parentBean.findProperties(), propDef.getFullName().getNamespace());
-        // TODO null -> bad namespace
+        BeanDescription parentBean = ci.forSerialization(serConfig, declaringClass.getType(), config);
+        String namespace = propDef.getFullName().getNamespace();
+        BeanPropertyDefinition namespaceDef = findProperty(parentBean.findProperties(), namespace);
+        if(namespaceDef == null) {
+            // TODO describe primaryMixin
+            throw new IllegalArgumentException(parentBean.getClassInfo().getType() + " does not contain " + namespace);
+        }
         JavaType beanType = namespaceDef.getAccessor().getType();
         // TODO provide additional constraint using type? assert type == namespaceAccessor.getAccessor().getType()
 
         // get property type
-        BeanDescription bean = ci.forSerialization((SerializationConfig)config,beanType,config); // TODO CRITICAL XXX suppress @JsonIgnore!
-        propDef = findProperty(bean.findProperties(), propDef.getName()); // TODO match more precisely?
-        // TODO miss in find will NPE, better error return
+        BeanDescription bean = ci.forSerialization(serConfig, beanType, config);
+        String propName = propDef.getName();
+        propDef = findProperty(bean.findProperties(), propName); // TODO match more precisely?
+        if(propDef == null) {
+            // TODO describe primaryMixin
+            throw new IllegalArgumentException(bean.getClassInfo().getType() + " does not contain " + propName);
+        }
         JavaType serializedType = propDef.getField().getType();
 
         // TODO declared vs serialized type mistakes?

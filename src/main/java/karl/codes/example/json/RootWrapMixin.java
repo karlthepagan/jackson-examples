@@ -1,6 +1,7 @@
 package karl.codes.example.json;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import karl.codes.example.Resource;
 import karl.codes.jackson.JsonWrap;
@@ -14,11 +15,13 @@ import karl.codes.jackson.NestedProp;
 )
 public class RootWrapMixin<T extends Resource> extends JsonWrap.Root<T> {
     @JsonGetter("data")
+    @JsonUnwrapped(enabled = false)
     public void setBody(T body) {
         super.setBody(body);
     }
 
     @JsonGetter("data")
+    @JsonUnwrapped(enabled = false)
     public T getBody() {
         return super.getBody();
     }

@@ -1,9 +1,12 @@
 package karl.codes.jackson;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.DefaultDeserializationContext;
 import com.fasterxml.jackson.databind.deser.DeserializerFactory;
+
+import java.io.IOException;
 
 /**
  * Created by karl on 8/14/16.
@@ -53,11 +56,31 @@ public class WrappingDeserializationContext extends DefaultDeserializationContex
     {
         deser = super.handleSecondaryContextualization(deser, prop, type);
 
-        if(prop == null) {
-            // TODO is this the right way to go?
-            System.out.println("TODO wrap deserializer");
+        if(prop == null && !JsonWrap.bypassWrap(type)) {
+            JavaType rootInput = getTypeFactory().constructParametricType(JsonWrap.RootInput.class,type);
+            JsonDeserializer<Object> rootDeser = _cache.findValueDeserializer(this,
+                    _factory, rootInput);
+            if(rootDeser == null) {
+                return deser;
+            }
+            deser = super.handleSecondaryContextualization(rootDeser, null, rootInput);
+
+            deser = new UnwrapDeserializer<>(deser);
         }
 
         return deser;
+    }
+
+    private static class UnwrapDeserializer<T> extends JsonDeserializer<Object> {
+        private final JsonDeserializer<?> parent;
+
+        public UnwrapDeserializer(JsonDeserializer<?> parent) {
+            this.parent = parent;
+        }
+
+        @Override
+        public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+            return ((JsonWrap.Root<T>)parent.deserialize(p, ctxt)).getBody();
+        }
     }
 }

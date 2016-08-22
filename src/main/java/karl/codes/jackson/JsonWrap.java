@@ -20,20 +20,22 @@ public interface JsonWrap {
         return type.getRawClass().equals(JsonNode.class);
     }
 
-    class Root<T> {
+    public static class Root<T> {
         private T body;
 
+        @JsonUnwrapped
         public void setBody(T body) {
             this.body = body;
         }
 
+        @JsonUnwrapped
         public T getBody() {
             return body;
         }
 
     }
 
-    class RootInput<T> extends Root<T> {
+    public static class RootInput<T> extends Root<T> {
         public static <T> RootInput<T> wrap(T body) {
             RootInput<T> root = new RootInput<>();
             root.setBody(body);
@@ -55,7 +57,7 @@ public interface JsonWrap {
         }
     }
 
-    class RootOutput<T> extends Root<T> {
+    public static class RootOutput<T> extends Root<T> {
         public static <T> RootOutput<T> wrap(T body) {
             RootOutput<T> root = new RootOutput<>();
             root.setBody(body);

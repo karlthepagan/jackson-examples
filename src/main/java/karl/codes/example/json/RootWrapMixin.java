@@ -13,16 +13,14 @@ import karl.codes.jackson.NestedProp;
 @JsonAppend(prepend = true,
         props = @JsonAppend.Prop(value = NestedProp.class, namespace = "data", name = "links")
 )
-public class RootWrapMixin<T extends Resource> extends JsonWrap.Root<T> {
+public abstract class RootWrapMixin<T extends Resource> extends JsonWrap.Root<T> {
+    @Override
     @JsonGetter("data")
     @JsonUnwrapped(enabled = false)
-    public void setBody(T body) {
-        super.setBody(body);
-    }
+    public abstract void setBody(T body);
 
+    @Override
     @JsonGetter("data")
     @JsonUnwrapped(enabled = false)
-    public T getBody() {
-        return super.getBody();
-    }
+    public abstract T getBody();
 }

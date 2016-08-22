@@ -16,12 +16,12 @@ class DocumentTest extends Specification {
     static standard = new ObjectMapper()
     static mixins = new ObjectMapper()
         .addMixIn(Document.class, DocumentMixin.class)
-        .addMixIn(Root.class, RootMixin.class)
+        .addMixIn(Container.class, RootMixin.class)
 
 
     def 'template test'() {
         when:
-        Root ser = json.readValue(data, Root.class)
+        Container ser = json.readValue(data, Container.class)
         def doc = ser.document
         String txt = json.writeValueAsString(ser)
         JsonNode out = json.readTree(txt)

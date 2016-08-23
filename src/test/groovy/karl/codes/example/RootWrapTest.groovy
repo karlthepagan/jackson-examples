@@ -7,7 +7,8 @@ import karl.codes.example.json.DocumentMixin
 import karl.codes.example.json.RootMixin
 import karl.codes.example.json.RootWrapMixin
 import karl.codes.jackson.JsonDocument
-import karl.codes.jackson.JsonWrap
+import karl.codes.jackson.RootOutputWrap
+import karl.codes.jackson.RootWrap
 import karl.codes.jackson.WrappingDeserializationContext
 import karl.codes.jackson.WrappingSerializerProvider
 import spock.lang.Specification
@@ -23,8 +24,8 @@ class RootWrapTest extends Specification {
             .setSerializerProvider(new WrappingSerializerProvider())
             .addMixIn(Root.class, RootMixin.class)
             .addMixIn(Document.class, DocumentMixin.class)
-            .addMixIn(JsonWrap.Root.class, RootWrapMixin.class)
-            .addMixIn(JsonWrap.RootOutput.class, RootWrapMixin.class)
+            .addMixIn(RootWrap.class, RootWrapMixin.class)
+            .addMixIn(RootOutputWrap.class, RootWrapMixin.class)
 
     def 'extra fields deserialized'() {
         when:

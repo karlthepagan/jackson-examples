@@ -1,37 +1,37 @@
 package karl.codes.example
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.deser.BeanDeserializerFactory
 import karl.codes.example.json.DocumentMixin
 import karl.codes.example.json.RootMixin
 import karl.codes.example.json.RootWrapMixin
-import karl.codes.jackson.JsonDocument
-import karl.codes.jackson.RootOutputWrap
-import karl.codes.jackson.RootWrap
+import karl.codes.jackson.*
 import spock.lang.Specification
 
-import static org.hamcrest.Matchers.*
-import static spock.util.matcher.HamcrestSupport.*
+import static org.hamcrest.Matchers.instanceOf
+import static spock.util.matcher.HamcrestSupport.that
 
 /**
- * Created by karl on 8/13/2016.
+ * Created by karl on 8/19/16.
  */
-class DocumentTest extends Specification {
-    def json = new ObjectMapper() //null,null,new WrappingDeserializationContext(BeanDeserializerFactory.instance))
-//        .setSerializerProvider(new WrappingSerializerProvider())
-        .addMixIn(Root.class, RootMixin.class)
-        .addMixIn(Document.class, DocumentMixin.class)
-        .addMixIn(RootWrap.class, RootWrapMixin.class)
-        .addMixIn(RootOutputWrap.class, RootWrapMixin.class)
+class DirectRootWrapTest extends Specification {
+    def json = new ObjectMapper()
+            .addMixIn(Root.class, RootMixin.class)
+            .addMixIn(Document.class, DocumentMixin.class)
+            .addMixIn(RootWrap.class, RootWrapMixin.class)
+            .addMixIn(RootOutputWrap.class, RootWrapMixin.class)
 
     def 'extra fields deserialized'() {
         when:
-        Root ser = json.readValue(data, Root.class)
+        RootInputWrap<Root> root = json.readValue(data, new TypeReference<RootInputWrap<Root>>(){})
+        Root ser = root.getBody()
         ser.links = ['link1']
         Document doc = ser.documents.entrySet().first().value
         String outStr = json.writeValueAsString(ser)
         JsonNode out = json.readTree(outStr)
-        JsonNode outDoc = out.documents.a
+        JsonNode outDoc = out.data.documents.a
 
         then:
         that doc, instanceOf(Document)
@@ -48,17 +48,18 @@ class DocumentTest extends Specification {
         where:
         data | name | metadata  | keys | values
         '''{
-            "baseUri": "https://karl.codes",
-            "documents": {
-                "a": {
-                    "name": "a",
-                    "metadata": "m",
-                    "a": "1",
-                    "b": "2"
+            "data": {
+                "baseUri": "https://karl.codes",
+                "documents": {
+                    "a": {
+                        "name": "a",
+                        "metadata": "m",
+                        "a": "1",
+                        "b": "2"
+                    }
                 }
             }
         }''' | 'a'  | 'm' |
         ['name',  'metadata', 'a', 'b'] |
         [null,    null,       '1', '2']
-    }
-}
+    }}

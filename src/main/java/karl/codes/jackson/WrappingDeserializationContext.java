@@ -57,7 +57,7 @@ public class WrappingDeserializationContext extends DefaultDeserializationContex
         deser = super.handleSecondaryContextualization(deser, prop, type);
 
         if(prop == null && !JsonWrap.bypassWrap(type)) {
-            JavaType rootInput = getTypeFactory().constructParametricType(JsonWrap.RootInput.class,type);
+            JavaType rootInput = getTypeFactory().constructParametricType(RootInputWrap.class,type);
             JsonDeserializer<Object> rootDeser = _cache.findValueDeserializer(this,
                     _factory, rootInput);
             if(rootDeser == null) {
@@ -80,7 +80,7 @@ public class WrappingDeserializationContext extends DefaultDeserializationContex
 
         @Override
         public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            return ((JsonWrap.Root<T>)parent.deserialize(p, ctxt)).getBody();
+            return ((RootWrap<T>)parent.deserialize(p, ctxt)).getBody();
         }
     }
 }

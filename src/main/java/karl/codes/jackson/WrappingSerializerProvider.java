@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.DefaultSerializerProvider;
 import com.fasterxml.jackson.databind.ser.SerializerFactory;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import java.io.IOException;
 
@@ -46,24 +45,24 @@ public class WrappingSerializerProvider extends DefaultSerializerProvider implem
 
     @Override
     public void serializeValue(JsonGenerator gen, Object value) throws IOException {
-        super.serializeValue(gen, RootOutput.wrap(value), RootOutput.wrapType(value.getClass(), getTypeFactory()));
+        super.serializeValue(gen, RootOutputWrap.wrap(value), RootOutputWrap.wrapType(value.getClass(), getTypeFactory()));
     }
 
     @Override
     public void serializeValue(JsonGenerator gen, Object value, JavaType rootType) throws IOException {
-        super.serializeValue(gen, RootOutput.wrap(value), RootOutput.wrapType(rootType, getTypeFactory()));
+        super.serializeValue(gen, RootOutputWrap.wrap(value), RootOutputWrap.wrapType(rootType, getTypeFactory()));
     }
 
     @Override
     public void serializeValue(JsonGenerator gen, Object value, JavaType rootType, JsonSerializer<Object> ser) throws IOException {
         // TODO wrap ser?
-        super.serializeValue(gen, RootOutput.wrap(value), RootOutput.wrapType(rootType, getTypeFactory()), ser);
+        super.serializeValue(gen, RootOutputWrap.wrap(value), RootOutputWrap.wrapType(rootType, getTypeFactory()), ser);
     }
 
     @Override
     public void serializePolymorphic(JsonGenerator gen, Object value, JavaType rootType, JsonSerializer<Object> valueSer, TypeSerializer typeSer) throws IOException {
         // TODO wrap valueSer?
         // TODO wrap typeSer?
-        super.serializePolymorphic(gen, RootOutput.wrap(value), RootOutput.wrapType(rootType, getTypeFactory()), valueSer, typeSer);
+        super.serializePolymorphic(gen, RootOutputWrap.wrap(value), RootOutputWrap.wrapType(rootType, getTypeFactory()), valueSer, typeSer);
     }
 }

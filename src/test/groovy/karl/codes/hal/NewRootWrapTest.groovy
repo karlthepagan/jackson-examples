@@ -9,6 +9,7 @@ import karl.codes.hal.example.Simple
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import static karl.codes.Groovy.*
 import static org.hamcrest.Matchers.instanceOf
 import static spock.util.matcher.HamcrestSupport.that
 
@@ -48,25 +49,29 @@ class NewRootWrapTest extends Specification {
 
         where:
         desc | skip | json | type | child | model | data | k | v
-        1 | true | standardJson | wrappedType | [] | ['body'] | '''{
-            "key": "key",
-            "value": "value"
-        }''' | "key" | "key"
-        2 | false | mixinJson | wrappedType | ['body'] | ['body'] | '''{
-            "body": {
-                "key": "key",
-                "value": "value"
-            }
-        }''' | "key" | "key"
-        3 | true | injectingJson | directType| [] | [] | '''{
-            "key": "key",
-            "value": "value"
-        }''' | "key" | "key"
-        4 | false | injMixJson | directType| ['body'] | [] | '''{
-            "body": {
-                "key": "key",
-                "value": "value"
-            }
-        }''' | "key" | "key"
+        1 | false | standardJson | wrappedType | [] | ['body'] |
+            js([
+                key: 'key',
+                value: 'value'
+            ]) | 'key' | 'key'
+        2 | false | mixinJson | wrappedType | ['body'] | ['body'] |
+            js([
+                body: [
+                    key: 'key',
+                    value: 'value'
+                ]
+            ]) | 'key' | 'key'
+        3 | false | injectingJson | directType| [] | [] |
+            js([
+                key: 'key',
+                value: 'value'
+            ]) | 'key' | 'key'
+        4 | false | injMixJson | directType| ['body'] | [] |
+            js([
+                body: [
+                    key: 'key',
+                    value: 'value'
+                ]
+            ]) | 'key' | 'key'
     }
 }

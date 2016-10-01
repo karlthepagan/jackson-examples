@@ -3,13 +3,13 @@ package karl.codes.example
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.deser.BeanDeserializerFactory
 import karl.codes.example.json.DocumentMixin
 import karl.codes.example.json.RootMixin
 import karl.codes.example.json.RootWrapMixin
 import karl.codes.jackson.*
 import spock.lang.Specification
 
+import static karl.codes.Groovy.*
 import static org.hamcrest.Matchers.instanceOf
 import static spock.util.matcher.HamcrestSupport.that
 
@@ -20,7 +20,7 @@ class DirectRootWrapTest extends Specification {
     def json = new ObjectMapper()
             .addMixIn(Root.class, RootMixin.class)
             .addMixIn(Document.class, DocumentMixin.class)
-            .addMixIn(RootWrap.class, RootWrapMixin.class)
+            .addMixIn(RootInputWrap.class, RootWrapMixin.class)
             .addMixIn(RootOutputWrap.class, RootWrapMixin.class)
 
     def 'extra fields deserialized'() {
@@ -47,19 +47,20 @@ class DirectRootWrapTest extends Specification {
 
         where:
         data | name | metadata  | keys | values
-        '''{
-            "data": {
-                "baseUri": "https://karl.codes",
-                "documents": {
-                    "a": {
-                        "name": "a",
-                        "metadata": "m",
-                        "a": "1",
-                        "b": "2"
-                    }
-                }
-            }
-        }''' | 'a'  | 'm' |
+        js([
+            data: [
+                baseUri: 'https://karl.codes',
+                documents: [
+                    a: [
+                        name: 'a',
+                        metadata: 'm',
+                        a: '1',
+                        b: '2'
+                    ]
+                ]
+            ]
+        ]) | 'a'  | 'm' |
         ['name',  'metadata', 'a', 'b'] |
         [null,    null,       '1', '2']
-    }}
+    }
+}

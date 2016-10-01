@@ -6,10 +6,11 @@ import karl.codes.example.json.DocumentMixin
 import karl.codes.example.json.RootMixin
 import karl.codes.example.json.RootWrapMixin
 import karl.codes.jackson.JsonDocument
+import karl.codes.jackson.RootInputWrap
 import karl.codes.jackson.RootOutputWrap
-import karl.codes.jackson.RootWrap
 import spock.lang.Specification
 
+import static karl.codes.Groovy.js
 import static org.hamcrest.Matchers.*
 import static spock.util.matcher.HamcrestSupport.*
 
@@ -21,7 +22,7 @@ class DocumentTest extends Specification {
 //        .setSerializerProvider(new WrappingSerializerProvider())
         .addMixIn(Root.class, RootMixin.class)
         .addMixIn(Document.class, DocumentMixin.class)
-        .addMixIn(RootWrap.class, RootWrapMixin.class)
+        .addMixIn(RootInputWrap.class, RootWrapMixin.class)
         .addMixIn(RootOutputWrap.class, RootWrapMixin.class)
 
     def 'extra fields deserialized'() {
@@ -47,17 +48,17 @@ class DocumentTest extends Specification {
 
         where:
         data | name | metadata  | keys | values
-        '''{
-            "baseUri": "https://karl.codes",
-            "documents": {
-                "a": {
-                    "name": "a",
-                    "metadata": "m",
-                    "a": "1",
-                    "b": "2"
-                }
-            }
-        }''' | 'a'  | 'm' |
+        js([
+            baseUri: 'https://karl.codes',
+            documents: [
+                a: [
+                    name: 'a',
+                    metadata: 'm',
+                    a: '1',
+                    b: '2'
+                ]
+            ]
+        ]) | 'a'  | 'm' |
         ['name',  'metadata', 'a', 'b'] |
         [null,    null,       '1', '2']
     }
